@@ -11,6 +11,7 @@ export const getUserData = async (req, res) => {
     try {
 
         const userId = req.auth.userId
+        console.log("user id is", userId);
 
         const user = await User.findById(userId)
 
