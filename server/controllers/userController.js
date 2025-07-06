@@ -34,6 +34,7 @@ export const purchaseCourse = async (req, res) => {
         const { courseId } = req.body
         const { origin } = req.headers
 
+
         const userId = req.auth.userId
 
         const courseData = await Course.findById(courseId)
@@ -68,36 +69,11 @@ export const purchaseCourse = async (req, res) => {
             quantity: 1
         }]
 
-        // Configure payment methods based on currency and region
-        let paymentMethodTypes = ['card'];
-        let additionalOptions = {};
-        
-        if (currency === 'inr') {
-            // For Indian Rupees, use domestic payment methods
-            paymentMethodTypes = ['card', 'upi', 'netbanking'];
-            additionalOptions = {
-                billing_address_collection: 'required',
-                customer_creation: 'always',
-                // Enable automatic tax calculation for India
-                automatic_tax: {
-                    enabled: true
-                }
-            };
-        } else {
-            // For other currencies, use international payment methods
-            paymentMethodTypes = ['card'];
-            additionalOptions = {
-                billing_address_collection: 'required'
-            };
-        }
-        
         const session = await stripeInstance.checkout.sessions.create({
             success_url: `${origin}/loading/my-enrollments`,
             cancel_url: `${origin}/`,
             line_items: line_items,
             mode: 'payment',
-            payment_method_types: paymentMethodTypes,
-            ...additionalOptions,
             metadata: {
                 purchaseId: newPurchase._id.toString()
             }
@@ -105,16 +81,9 @@ export const purchaseCourse = async (req, res) => {
 
         res.json({ success: true, session_url: session.url });
 
+
     } catch (error) {
-        // Handle specific Indian payment regulation errors
-        if (error.message.includes('india-exports') || error.message.includes('international payments')) {
-            res.json({ 
-                success: false, 
-                message: 'International payments are not supported for individual accounts in India. Please use domestic payment methods or contact support for business account setup.' 
-            });
-        } else {
-            res.json({ success: false, message: error.message });
-        }
+        res.json({ success: false, message: error.message });
     }
 }
 
