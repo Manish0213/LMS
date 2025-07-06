@@ -69,6 +69,7 @@ export const clerkWebhooks = async (req, res) => {
     }
 
   } catch (error) {
+    console.error("❌ Signature verification failed:", error.message);
     res.json({ success: false, message: error.message })
   }
 }
