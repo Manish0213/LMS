@@ -28,6 +28,7 @@ export const getUserData = async (req, res) => {
 
 // Purchase Course 
 export const purchaseCourse = async (req, res) => {
+    console.log("✅ API Hit Ho Gayi");
 
     try {
 
@@ -81,7 +82,7 @@ export const purchaseCourse = async (req, res) => {
         })
 
         console.log('Session URL: ', session.url);
-        
+
         res.json({ success: true, session_url: session.url });
 
 
