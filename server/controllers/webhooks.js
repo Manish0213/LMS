@@ -8,6 +8,7 @@ import Course from "../models/Course.js";
 
 // API Controller Function to Manage Clerk User with database
 export const clerkWebhooks = async (req, res) => {
+  console.log("webhook body", req.body);
   try {
 
     // Create a Svix instance with clerk webhook secret.
