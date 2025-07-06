@@ -80,6 +80,8 @@ export const purchaseCourse = async (req, res) => {
             }
         })
 
+        console.log('Session URL: ', session.url);
+        
         res.json({ success: true, session_url: session.url });
 
 
