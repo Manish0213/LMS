@@ -15,8 +15,6 @@ import { ToastContainer } from 'react-toastify'
 import Player from './pages/student/Player'
 import MyEnrollments from './pages/student/MyEnrollments'
 import Loading from './components/student/Loading'
-import PaymentPage from './pages/student/PaymentPage'
-import PaymentSuccess from './pages/student/PaymentSuccess'
 
 const App = () => {
 
@@ -41,8 +39,6 @@ const App = () => {
           <Route path='my-courses' element={<MyCourses />} />
           <Route path='student-enrolled' element={<StudentsEnrolled />} />
         </Route>
-        <Route path="/payment" element={<PaymentPage />} />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
       </Routes>
     </div>
   )
