@@ -27,70 +27,95 @@ export const getUserData = async (req, res) => {
 }
 
 // Purchase Course 
-export const purchaseCourse = async (req, res) => {
-    console.log("✅ API Hit Ho Gayi");
+// export const purchaseCourse = async (req, res) => {
+//     console.log("✅ API Hit Ho Gayi");
 
-    try {
+//     try {
 
-        const { courseId } = req.body
-        const { origin } = req.headers
-
-
-        const userId = req.auth.userId
-
-        const courseData = await Course.findById(courseId)
-        const userData = await User.findById(userId)
-
-        if (!userData || !courseData) {
-            return res.json({ success: false, message: 'Data Not Found' })
-        }
-
-        const purchaseData = {
-            courseId: courseData._id,
-            userId,
-            amount: (courseData.coursePrice - courseData.discount * courseData.coursePrice / 100).toFixed(2),
-        }
-
-        const newPurchase = await Purchase.create(purchaseData)
-
-        // Stripe Gateway Initialize
-        const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
-
-        // const currency = process.env.CURRENCY.toLocaleLowerCase()
-        const currency = 'inr'; // Force INR currency for Indian Cards
-
-        // Creating line items to for Stripe
-        const line_items = [{
-            price_data: {
-                currency,
-                product_data: {
-                    name: courseData.courseTitle
-                },
-                unit_amount: Math.floor(newPurchase.amount) * 100
-            },
-            quantity: 1
-        }]
-
-        const session = await stripeInstance.checkout.sessions.create({
-            success_url: `${origin}/loading/my-enrollments`,
-            cancel_url: `${origin}/`,
-            payment_method_types: ['card'],
-            line_items: line_items,
-            mode: 'payment',
-            metadata: {
-                purchaseId: newPurchase._id.toString()
-            }
-        })
-
-        console.log('Session URL: ', session.url);
-
-        res.json({ success: true, session_url: session.url });
+//         const { courseId } = req.body
+//         const { origin } = req.headers
 
 
-    } catch (error) {
-        res.json({ success: false, message: error.message });
+//         const userId = req.auth.userId
+
+//         const courseData = await Course.findById(courseId)
+//         const userData = await User.findById(userId)
+
+//         if (!userData || !courseData) {
+//             return res.json({ success: false, message: 'Data Not Found' })
+//         }
+
+//         const purchaseData = {
+//             courseId: courseData._id,
+//             userId,
+//             amount: (courseData.coursePrice - courseData.discount * courseData.coursePrice / 100).toFixed(2),
+//         }
+
+//         const newPurchase = await Purchase.create(purchaseData)
+
+//         // Stripe Gateway Initialize
+//         const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
+
+//         const currency = process.env.CURRENCY.toLocaleLowerCase()
+
+//         // Creating line items to for Stripe
+//         const line_items = [{
+//             price_data: {
+//                 currency,
+//                 product_data: {
+//                     name: courseData.courseTitle
+//                 },
+//                 unit_amount: Math.floor(newPurchase.amount) * 100
+//             },
+//             quantity: 1
+//         }]
+
+//         const session = await stripeInstance.checkout.sessions.create({
+//             success_url: `${origin}/loading/my-enrollments`,
+//             cancel_url: `${origin}/`,
+//             payment_method_types: ['card', 'upi', 'netbanking'],
+//             line_items: line_items,
+//             mode: 'payment',
+//             metadata: {
+//                 purchaseId: newPurchase._id.toString()
+//             }
+//         })
+
+//         console.log('Session URL: ', session.url);
+
+//         res.json({ success: true, session_url: session.url });
+
+
+//     } catch (error) {
+//         res.json({ success: false, message: error.message });
+//     }
+// }
+
+export const createPaymentIntent = async (req, res) => {
+  try {
+    const { courseId } = req.body;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.json({ success: false, message: 'Course not found' });
     }
-}
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: course.coursePrice * 100,
+      currency: 'inr',
+      payment_method_types: ['card'],
+      metadata: { 
+        userId: req.auth.userId, 
+        courseId: course._id 
+      }
+    });
+
+    res.json({ success: true, clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
 
 // Users Enrolled Courses With Lecture Links
 export const userEnrolledCourses = async (req, res) => {

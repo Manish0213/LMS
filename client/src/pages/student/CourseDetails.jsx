@@ -52,36 +52,54 @@ const CourseDetails = () => {
   };
 
 
+  // const enrollCourse = async () => {
+
+  //   try {
+
+  //     if (!userData) {
+  //       return toast.warn('Login to Enroll')
+  //     }
+
+  //     if (isAlreadyEnrolled) {
+  //       return toast.warn('Already Enrolled')
+  //     }
+
+  //     const token = await getToken();
+
+  //     const { data } = await axios.post(backendUrl + '/api/user/purchase',
+  //       { courseId: courseData._id },
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     )
+
+  //     if (data.success) {
+  //       const { session_url } = data
+  //       window.location.replace(session_url)
+  //     } else {
+  //       toast.error(data.message)
+  //     }
+
+  //   } catch (error) {
+  //     toast.error(error.message)
+  //   }
+  // }
+
   const enrollCourse = async () => {
-
     try {
-
-      if (!userData) {
-        return toast.warn('Login to Enroll')
-      }
-
-      if (isAlreadyEnrolled) {
-        return toast.warn('Already Enrolled')
-      }
-
       const token = await getToken();
 
-      const { data } = await axios.post(backendUrl + '/api/user/purchase',
+      const { data } = await axios.post(`${backendUrl}/api/payment/create-payment-intent`,
         { courseId: courseData._id },
         { headers: { Authorization: `Bearer ${token}` } }
-      )
+      );
 
       if (data.success) {
-        const { session_url } = data
-        window.location.replace(session_url)
-      } else {
-        toast.error(data.message)
+        window.location.href = `/payment?clientSecret=${data.clientSecret}`;
       }
-
     } catch (error) {
-      toast.error(error.message)
+      console.error(error.message);
     }
-  }
+  };
+
 
   useEffect(() => {
     fetchCourseData()
