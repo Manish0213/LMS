@@ -52,55 +52,36 @@ const CourseDetails = () => {
   };
 
 
-  // const enrollCourse = async () => {
-
-  //   try {
-
-  //     if (!userData) {
-  //       return toast.warn('Login to Enroll')
-  //     }
-
-  //     if (isAlreadyEnrolled) {
-  //       return toast.warn('Already Enrolled')
-  //     }
-
-  //     const token = await getToken();
-
-  //     const { data } = await axios.post(backendUrl + '/api/user/purchase',
-  //       { courseId: courseData._id },
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     )
-
-  //     if (data.success) {
-  //       const { session_url } = data
-  //       window.location.replace(session_url)
-  //     } else {
-  //       toast.error(data.message)
-  //     }
-
-  //   } catch (error) {
-  //     toast.error(error.message)
-  //   }
-  // }
-
   const enrollCourse = async () => {
-    console.log("you click the enrolled course");
+
     try {
+
+      if (!userData) {
+        return toast.warn('Login to Enroll')
+      }
+
+      if (isAlreadyEnrolled) {
+        return toast.warn('Already Enrolled')
+      }
+
       const token = await getToken();
 
-      const { data } = await axios.post(`${backendUrl}/api/user/create-payment-intent`,
+      const { data } = await axios.post(backendUrl + '/api/user/purchase',
         { courseId: courseData._id },
         { headers: { Authorization: `Bearer ${token}` } }
-      );
-      console.log("my data is after creeate payment intent",data);
+      )
 
       if (data.success) {
-        window.location.href = `/payment?clientSecret=${data.clientSecret}`;
+        const { session_url } = data
+        window.location.replace(session_url)
+      } else {
+        toast.error(data.message)
       }
+
     } catch (error) {
-      console.error(error.message);
+      toast.error(error.message)
     }
-  };
+  }
 
 
   useEffect(() => {
