@@ -106,8 +106,8 @@ export const createPaymentIntent = async (req, res) => {
       currency: 'inr',
       payment_method_types: ['card'],
       metadata: { 
-        userId: req.auth.userId, 
-        courseId: course._id 
+        userId: req.auth.userId.toString(), 
+        courseId: course._id.toString() 
       }
     });
 
