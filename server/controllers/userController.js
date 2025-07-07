@@ -94,6 +94,7 @@ export const getUserData = async (req, res) => {
 export const createPaymentIntent = async (req, res) => {
   try {
     const { courseId } = req.body;
+    console.log("my request body is ",req.body);
 
     const course = await Course.findById(courseId);
     if (!course) {

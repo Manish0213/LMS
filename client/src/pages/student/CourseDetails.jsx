@@ -84,6 +84,7 @@ const CourseDetails = () => {
   // }
 
   const enrollCourse = async () => {
+    console.log("you click the enrolled course");
     try {
       const token = await getToken();
 
@@ -91,6 +92,7 @@ const CourseDetails = () => {
         { courseId: courseData._id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      console.log("my data is after creeate payment intent",data);
 
       if (data.success) {
         window.location.href = `/payment?clientSecret=${data.clientSecret}`;
