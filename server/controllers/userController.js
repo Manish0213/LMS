@@ -56,7 +56,8 @@ export const purchaseCourse = async (req, res) => {
         // Stripe Gateway Initialize
         const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
 
-        const currency = process.env.CURRENCY.toLocaleLowerCase()
+        // const currency = process.env.CURRENCY.toLocaleLowerCase()
+        const currency = 'inr'; // Force INR currency for Indian Cards
 
         // Creating line items to for Stripe
         const line_items = [{
@@ -73,7 +74,7 @@ export const purchaseCourse = async (req, res) => {
         const session = await stripeInstance.checkout.sessions.create({
             success_url: `${origin}/loading/my-enrollments`,
             cancel_url: `${origin}/`,
-            payment_method_types: ['card', 'upi', 'netbanking'],
+            payment_method_types: ['card'],
             line_items: line_items,
             mode: 'payment',
             metadata: {
