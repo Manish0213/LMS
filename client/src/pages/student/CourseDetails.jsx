@@ -87,7 +87,7 @@ const CourseDetails = () => {
     try {
       const token = await getToken();
 
-      const { data } = await axios.post(`${backendUrl}/api/payment/create-payment-intent`,
+      const { data } = await axios.post(`${backendUrl}/api/user/create-payment-intent`,
         { courseId: courseData._id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
