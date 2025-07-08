@@ -53,35 +53,61 @@ const CourseDetails = () => {
 
 
   const enrollCourse = async () => {
-
     try {
-
       if (!userData) {
-        return toast.warn('Login to Enroll')
+        return toast.warn('Login to Enroll');
       }
 
       if (isAlreadyEnrolled) {
-        return toast.warn('Already Enrolled')
+        return toast.warn('Already Enrolled');
       }
 
       const token = await getToken();
 
-      const { data } = await axios.post(backendUrl + '/api/user/purchase',
-        { courseId: courseData._id },
+      const { data } = await axios.post(backendUrl + '/api/payment/create-order',
+        { amount: courseData.coursePrice },
         { headers: { Authorization: `Bearer ${token}` } }
-      )
+      );
 
       if (data.success) {
-        const { session_url } = data
-        window.location.replace(session_url)
+        const options = {
+          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+          amount: data.amount,
+          currency: data.currency,
+          order_id: data.orderId,
+          name: 'LMS Course',
+          description: courseData.courseTitle,
+          handler: async function (response) {
+            await axios.post(backendUrl + '/api/payment/verify-payment',
+              {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                courseId: courseData._id
+              },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            toast.success('✅ Payment Successful & Enrolled!');
+            window.location.reload();
+          },
+          prefill: {
+            name: userData?.name,
+            email: userData?.email,
+          },
+          theme: { color: '#3b82f6' },
+        };
+
+        const razor = new window.Razorpay(options);
+        razor.open();
       } else {
-        toast.error(data.message)
+        toast.error('❌ Failed to create Razorpay Order');
       }
 
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
-  }
+  };
+
 
 
   useEffect(() => {

@@ -1,16 +1,10 @@
 import express from 'express';
-import { createPaymentIntent, confirmEnrollment } from '../controllers/paymentController.js';
-import { clerkMiddleware } from '@clerk/express';
+import { createOrder, verifyPayment } from '../controllers/paymentController.js';
+import { isAuthenticated } from '../middlewares/authMiddleware.js';
 
-const paymentRouter = express.Router();
+const router = express.Router();
 
-// Apply authentication middleware
-paymentRouter.use(clerkMiddleware());
+router.post('/create-order', isAuthenticated, createOrder);
+router.post('/verify-payment', isAuthenticated, verifyPayment);
 
-// Create Payment Intent
-paymentRouter.post('/create-payment-intent', createPaymentIntent);
-
-// Confirm Enrollment after successful payment
-paymentRouter.post('/confirm-enrollment', confirmEnrollment);
-
-export default paymentRouter; 
+export default router;

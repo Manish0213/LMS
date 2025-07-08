@@ -8,6 +8,7 @@ import { clerkMiddleware } from '@clerk/express'
 import { clerkWebhooks, stripeWebhooks } from './controllers/webhooks.js'
 import educatorRouter from './routes/educatorRoutes.js'
 import courseRouter from './routes/courseRoute.js'
+import paymentRoutes from './routes/paymentRoutes.js';
 
 // Initialize Express
 const app = express()
@@ -30,6 +31,7 @@ app.post('/clerk' , clerkWebhooks)
 app.use('/api/educator', express.json(), educatorRouter)
 app.use('/api/course', express.json(), courseRouter)
 app.use('/api/user', express.json(), userRouter)
+app.use('/api/payment', paymentRoutes);
 
 // Port
 const PORT = process.env.PORT || 5000
