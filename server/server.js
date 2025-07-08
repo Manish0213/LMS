@@ -22,7 +22,9 @@ await connectCloudinary()
 app.use(cors())
 app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhooks)
 app.use(express.json())
-app.use(clerkMiddleware())
+app.use(clerkMiddleware({
+  secretKey: process.env.CLERK_SECRET_KEY
+}))
 
 // Routes
 app.get('/', (req, res) => res.send("API Working"))
@@ -31,7 +33,7 @@ app.post('/clerk' , clerkWebhooks)
 app.use('/api/educator', express.json(), educatorRouter)
 app.use('/api/course', express.json(), courseRouter)
 app.use('/api/user', express.json(), userRouter)
-app.use('/api/payment', paymentRoutes);
+app.use('/api/payment', express.json(), paymentRoutes);
 
 // Port
 const PORT = process.env.PORT || 5000
