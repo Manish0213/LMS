@@ -1,8 +1,8 @@
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
-const Purchase = require('../models/Purchase');
-const Course = require('../models/Course');
-const User = require('../models/User');
+import Purchase from '../models/Purchase.js';
+import Course from '../models/Course.js';
+import User from '../models/User.js';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
