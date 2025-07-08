@@ -1,6 +1,7 @@
 import express from 'express';
 import { createOrder, verifyPayment } from '../controllers/paymentController.js';
 import { isAuthenticated } from '../middlewares/authMiddleware.js';
+const isAuthenticated = require('../middlewares/authMiddleware.js');
 
 const router = express.Router();
 
